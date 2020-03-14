@@ -1,0 +1,5 @@
+cls
+
+query session /server:”HOSTNAME”
+
+# or query user /server:”HOSTNAME”
