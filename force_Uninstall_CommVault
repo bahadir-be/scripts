@@ -1,0 +1,9 @@
+Set-ItemProperty -Path HKLM:\SOFTWARE\XXXXX\Parameters -Name BackupAgent -Value NO
+
+Remove-ItemProperty -Path 'HKLM:\SOFTWARE\CommVault Systems' -force
+
+Remove-ItemProperty -Path 'HKLM:\SOFTWARE\GalaxyRemoteInstall' -force
+
+Remove-item -path "C:\Program Files\simpana-BUCV" -force
+
+Remove-item -path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\CommVault" -force
