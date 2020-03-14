@@ -1,0 +1,5 @@
+ # lists hotfixes/updates that have been installed
+ Get-Hotfix | Format-Table -AutoSize
+ 
+ # gives methods you can use
+get-hotfix | gm
