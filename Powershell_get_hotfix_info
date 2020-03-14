@@ -1,3 +1,5 @@
+ # By SENCER DEMIR
+ 
  # lists hotfixes/updates that have been installed
  Get-Hotfix | Format-Table -AutoSize
  
