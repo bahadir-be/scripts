@@ -1,0 +1,29 @@
+$Computers = Get-Content "C:\VDO\al.txt"
+$Path = "HKLM:\SOFTWARE\Wow6432Node\VDO\Parameters"
+$Property = "SecPatchVersion"
+$Value = "201908.011"
+
+$results = foreach ($computer in $Computers)
+{
+    If (test-connection -ComputerName $computer -Count 1 -Quiet)
+    {
+        Try {
+            Set-ItemProperty -Path $path -Name $Property -Data $Value -ErrorAction 'Stop'
+            $status = "Success"
+        } Catch {
+            $status = "Failed"
+        }
+    }
+    else
+    {   
+        $status = "Unreachable"
+    }
+    
+    New-Object -TypeName PSObject -Property @{
+        'Computer'=$computer
+        'Status'=$status
+    }
+}
+
+$results |
+Export-Csv -NoTypeInformation -Path "C:\VDO\output_REG2.csv"
