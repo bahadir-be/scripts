@@ -1,0 +1,76 @@
+rem  Kit created by : BAHADIR YILMAZ
+rem  Kit created on : 28/01/2019
+rem  ------------------------------------------
+rem  Uninstall / Install for SCCMClient
+rem  ------------------------------------------
+
+rem  ------------------------
+rem  CommandFile Version 2.01
+rem  ------------------------
+
+:: Preprocessing 
+
+
+@echo SERVER RELEASE TEAM - CUSTOM PATCH ( UNINSTALL / INSTALL )
+@echo Developed by BAHADIR
+@echo Estimated Time : +/- 10 min.
+@echo LETS GO ....
+
+net stop ccmexec & net stop wuauserv & net stop BITS
+Cd C:\Windows\ccmsetup
+
+
+@echo WAITING UNINSTALLING... ( you can check from Task manager )
+sleep 1
+
+ccmsetup.exe /uninstall
+
+sleep 10
+@echo DONE! SKIP TO DELETE OLD FILES...
+Cd C:\Windows\
+
+RD /s /q "C:\Windows\ccmsetup"
+RD /s /q "C:\Windows\CCM"
+RD /s /q "C:\Windows\ccm"
+RD /s /q "C:\Windows\system32\CCM"
+net stop BITS
+RD /s /q "C:\ProgramData\Microsoft\Network\Downloader"
+DEL /q "C:\windows\smscfg.ini
+Reg Delete HKLM\software\Microsoft\ccm /f
+Reg Delete HKLM\software\Microsoft\CCMSETUP /f
+Reg Delete HKLM\software\Microsoft\SMS /f
+Reg Delete HKLM\software\Microsoft\Systemcertificates\SMS\Certificates /f
+
+
+sleep 3
+@echo DELETE ALL ! YUPPIIIIIIIIIIIIIIIIIIIIII and now time SKIP TO INSTALL!!!
+
+
+mkdir C:\Windows\ccmsetup
+
+xcopy /z \\ccmsetup.exe C:\Windows\ccmsetup
+
+@echo CCMSETUP OK!
+sleep 1
+
+xcopy /z \\configmgr2012ac-sp2r2sp1-kb3135680-i386.msp C:\Windows\ccmsetup
+xcopy /z \\configmgr2012ac-sp2r2sp1-kb3135680-x64.msp C:\Windows\ccmsetup
+xcopy /z \\configmgr2012ac-sp2r2sp1-kb3169945-i386.msp C:\Windows\ccmsetup
+xcopy /z \\configmgr2012ac-sp2r2sp1-kb3169945-x64.msp C:\Windows\ccmsetup
+
+sleep 3
+@echo STARTING INSTALLING....
+
+cd c:\Windows\ccmsetup
+CCMSETUP.exe /skipprereq:silverlight.exe PATCH="C:\Windows\ccmsetup\configmgr2012ac-sp2r2sp1-kb3135680-X64.msp;C:\Windows\ccmsetup\configmgr2012ac-sp2r2sp1-kb3169945-X64.msp" "SMSSITECODE=VDO" SMSCACHEDIR="%dataroot%\se-k-sccmclient-MSCM" SMSCACHESIZE=10240
+
+sleep 240
+
+sleep 3
+@echo STARING SERVICES...
+
+net start ccmexec & net start wuauserv & net start BITS
+
+sleep 3
+@echo OK
+start "" /wait cmd /c "echo DONE!&echo(&pause"
