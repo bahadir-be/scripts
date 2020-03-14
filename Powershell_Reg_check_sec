@@ -1,0 +1,34 @@
+# RLM Tools
+# Developer : BAHADIR YILMAZ
+# Version : 1.5
+# Date : 25/02/2019
+# 
+
+cls
+$xbow = 'SOFTWARE\VDO\InstalledProducts'
+$BR_RAT = 'SOFTWARE\VDO\Parameters'
+$value2 = 'BR_RAT'
+$value3 = 'SecPatchVersionCritical'
+$value4 = 'SP_RAT'
+$valuename = 'XBowVersion'
+$machinename = $computer
+
+# Customize below text file - you can add to hostname... 
+
+$computers = Get-Content \\VDO\servers.txt
+foreach ($computer in $computers) {
+if (Test-Connection -ComputerName $computer -Count 1 -Quiet -erroraction silentlycontinue) {
+	$reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $computer)
+	$xbowvalue = $reg.opensubkey($xbow)
+	$regvaluex = $xbowvalue.getvalue($valuename)
+    $BR_value = $reg.opensubkey($BR_RAT)
+	$regvalueBR = $BR_value.getvalue($value2)
+    $regvalueSec = $BR_value.getvalue($value3)
+    $regvalueSecDate = $BR_value.getvalue($value4)
+    
+    Write-Host "$computer - [ $regvalueSec ] // $regvalueSecDate" -ForegroundColor Cyan -BackgroundColor BLACK |Format-wide
+    Write-Output "$computer - $regvalueSec " | Out-File "C:\VDO\output.csv" -Append 
+}
+else {
+write-host "<<<< $computer - OFFLINE! >>>>" -ForegroundColor yellow -BackgroundColor Black }
+}
