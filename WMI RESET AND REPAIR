@@ -1,0 +1,35 @@
+WMI RESET AND REPAIR - 06/11/2019
+ 
+ 
+:: ==================================================================================
+:: NAME:        Reset WMI
+:: AUTHOR:        BAHADIR YILMAZ
+:: ==================================================================================
+ 
+ 
+ 
+@echo off
+REM  WMI Repair
+Title WMI Repair script running on the client machines
+ 
+%windir%\system32\wbem\winmgmt /clearadap
+%windir%\system32\wbem\winmgmt /kill
+%windir%\system32\wbem\winmgmt /unregserver
+%windir%\system32\wbem\winmgmt /regserver
+%windir%\system32\wbem\winmgmt /resyncperf
+ 
+net stop winmgmt /y
+ 
+REM if exist %windir%\system32\wbem\repository.old rmdir /s /q %windir%\system32\wbem\repository.old
+REM ren %windir%\system32\wbem\repository repository.old
+ 
+regsvr32 /s %systemroot%\system32\scecli.dll
+regsvr32 /s %systemroot%\system32\userenv.dll
+ 
+for /f %%s in ('dir /b /s %windir%\system32\wbem\*.dll') do regsvr32 /s %%s
+ 
+for /f %%s in ('dir /b /s %windir%\system32\wbem\*.mof') do mofcomp %%s
+for /f %%s in ('dir /b %windir%\system32\wbem\*.mfl') do mofcomp %%s
+ 
+net start winmgmt
+%windir%\system32\wbem\wmiprvse /regserver
