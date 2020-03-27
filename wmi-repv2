@@ -1,0 +1,59 @@
+Stop-Service -Name 'winmgmt' -Force -ErrorAction 'Stop' 
+ 
+Start-Process -FilePath "C:\Windows\System32\wbem\winmgmt.exe" -ArgumentList "/clearadap" 
+             
+Start-Process -FilePath "C:\Windows\System32\wbem\winmgmt.exe" -ArgumentList "/kill" 
+             
+Start-Process -FilePath "C:\Windows\System32\wbem\winmgmt.exe" -ArgumentList "/unregserver" 
+ 
+Start-Process -FilePath "C:\Windows\System32\wbem\winmgmt.exe" -ArgumentList "/regserver" 
+ 
+Start-Process -FilePath "C:\Windows\System32\wbem\winmgmt.exe" -ArgumentList "/resyncperf" 
+ 
+Remove-Item -Path "$env:SystemRoot\System32\wbem\AutoRecover" -Recurse -Force 
+ 
+Remove-Item -Path "$env:SystemRoot\System32\wbem\Repository" -Recurse -Force 
+             
+$TotalDLL = Get-ChildItem -Path "$env:SystemRoot\System32\wbem" -Include *.dll -Recurse 
+             
+$dllcount = 0 
+             
+foreach ($dll in $TotalDLL) { 
+                 
+    $dllcount++ 
+                 
+    $dllname = $dll.Name 
+                 
+    [int]$pct = ($dllcount / $TotalDLL.Count) * 100 
+                 
+    Start-Process -FilePath "$env:SystemRoot\System32\regsvr32.exe" -ArgumentList "-s $dllname" 
+                 
+                 
+    $progressbaroverlay.Value = $pct 
+} 
+             
+$mofcount = 0 
+             
+$TotalMOF = Get-ChildItem -Path "$env:SystemRoot\System32\wbem" -Include *.mof, *.mfl -Recurse 
+             
+foreach ($mof in $TotalMOF) { 
+                 
+    $mofcount++ 
+                 
+    $mofname = $mof.Name 
+                 
+    [int]$pct = ($mofcount / $TotalMOF.Count) * 100 
+                 
+    Start-Process -FilePath "$env:SystemRoot\System32\wbem\mofcomp.exe" -ArgumentList "$mofname" 
+                 
+    $progressbaroverlay.Value = $pct 
+                 
+} 
+ 
+Start-Process -FilePath "C:\Windows\System32\wbem\WmiApSrv.exe" -ArgumentList "/Regsvr32" 
+     
+Start-Process -FilePath "C:\Windows\System32\wbem\WmiPrvSE.exe" -ArgumentList "/Regsvr32" 
+ 
+Start-Process -FilePath "C:\Windows\System32\wbem\WMIADAP.exe" -ArgumentList "/Regsvr32" 
+             
+Start-Service -Name 'winmgmt' 
